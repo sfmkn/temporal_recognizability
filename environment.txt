@@ -1,0 +1,35 @@
+TEMPORAL RECOGNIZABILITY PROJECT
+Reproducibility Environment
+========================================
+
+BASELINE REPRODUCTION ENVIRONMENT
+
+MATLAB Release: R2026b Update 1
+MATLAB Version: 26.2.0.3433840
+Platform: GLNXA64
+
+Required for Stage-3 baseline reproduction:
+- MATLAB R2026b
+- Statistics and Machine Learning Toolbox 26.2
+
+Baseline reproduction script:
+scripts/reproduce_baselines.m
+
+The baseline reproduction uses frozen 48-dimensional
+feature datasets and frozen repeated cross-validation
+assignments. It does not require rerunning the physical
+power-system simulations.
+
+ADDITIONAL SOFTWARE USED FOR ORIGINAL DATA GENERATION
+
+The original IEEE 33-bus fault-event dataset was generated
+using MATLAB/Simulink and Simscape Electrical.
+
+Relevant installed products:
+- Simulink 26.2
+- Simscape 26.2
+- Simscape Electrical 26.2
+
+These simulation products are not required merely to
+reproduce the Stage-3 baseline table from the frozen
+feature datasets.
