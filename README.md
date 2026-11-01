@@ -46,8 +46,10 @@ Scenario metadata such as fault resistance, fault location, inception angle, and
 Three Stage-3 baselines are implemented:
 
 1. RBF-SVM: C = 300, KernelScale = 10
-2. Adapted Hojabri-style KNN: k = 5, Manhattan distance, inverse-distance weighting
+2. Fair-tuned KNN: k = 1, Chebychev distance, inverse-distance weighting
 3. Uniform-random classifier: ten equiprobable classes
+
+The KNN baseline was initialized from the published Hojabri-style configuration (k = 5, Manhattan/cityblock distance, inverse-distance weighting). For the principal fair comparison, KNN and SVM were each allocated the same 29-configuration hyperparameter-search budget. The final frozen KNN configuration was k = 1 with Chebychev distance and inverse-distance weighting.
 
 ## Experimental Protocol
 
@@ -60,6 +62,8 @@ The frozen event-level split contains:
 For Stage-3 baseline stability estimation, the original training and validation partitions form a 1,700-event development set. Repeated stratified 5-fold cross-validation is performed for five repeats, giving 25 matched evaluations per temporal window.
 
 Feature standardization is fitted only on the training portion of each cross-validation fold and then applied to the corresponding validation portion. The locked 300-event test set is not used by the baseline reproduction script.
+
+For fair classifier comparison, SVM and KNN use the same 48-dimensional feature representation, the same 1,700-event development set, the same frozen repeated-CV fold assignments, the same fold-specific preprocessing, and the same 29-configuration hyperparameter-tuning budget. Hyperparameters are frozen before repeated-CV comparison.
 
 Reported metrics are:
 
@@ -79,7 +83,7 @@ See `environment.txt` for the recorded execution environment.
 From MATLAB, add the scripts directory to the path:
 
 ```matlab
-addpath('/MATLAB Drive/Temporal_Recognizability_Dataset/scripts')
+addpath('/MATLAB Drive/temporal_recognizability_GitHub/scripts')
 ```
 
 Then reproduce the complete baseline table with one command:
@@ -94,8 +98,8 @@ feature datasets and frozen repeated-CV assignments.
 Reproduced results are written to:
 
 ```text
-Results/Reproduction/STAGE3_BASELINES_REPRODUCED.mat
-Results/Reproduction/STAGE3_BASELINES_REPRODUCED.csv
+Results/Reproduction/STAGE3_BASELINES_FAIR_29BUDGET_V1.mat
+Results/Reproduction/STAGE3_BASELINES_FAIR_29BUDGET_V1.csv
 ```
 
 ## Key Reproduced Result
@@ -105,10 +109,12 @@ At the critical T/8 observation window:
 | Model | Mean Accuracy | SD |
 |---|---:|---:|
 | RBF-SVM | 90.40% | 1.29% |
-| Adapted Hojabri-style KNN | 50.84% | 2.57% |
+| Fair-tuned KNN | 57.67% | 2.87% |
 | Uniform Random | 9.64% | 1.49% |
 
-The RBF-SVM first satisfies the study-defined temporal recognizability criterion at T/8, with the criterion remaining satisfied at the immediately following T/4 window.
+The RBF-SVM first satisfies the study-defined temporal recognizability criterion at T/8, with the criterion remaining satisfied at the immediately following T/4 window. The fair-tuned KNN does not satisfy the recognizability criterion within the evaluated 0-3T observation interval.
+
+At T/8, the mean paired SVM improvement over tuned KNN is 32.73 percentage points (95% CI: 31.64-33.82 pp). SVM is higher in all 25 matched evaluations. The difference is significant using both a paired t-test (t(24) = 62.09, p < 0.001) and a Wilcoxon signed-rank test (z = 4.38, p < 0.001).
 
 ## Temporal Recognizability Criterion
 
@@ -145,7 +151,7 @@ Temporal_Recognizability_Dataset/
 
 ## Reproducibility Status
 
-The Stage-3 reproduction script has been executed successfully. RBF-SVM, adapted KNN, and uniform-random results reproduced the previously frozen repeated-CV results across all 20 temporal windows to the reported precision.
+The Stage-3 reproduction script has been executed successfully. RBF-SVM, fair-tuned KNN, and uniform-random results reproduce the frozen repeated-CV results across all 20 temporal windows to the reported precision. The original Hojabri-style KNN reproduction script is retained separately as `scripts/reproduce_baselines_original_hojabri.m` for auditability.
 
 ## Data Integrity
 
