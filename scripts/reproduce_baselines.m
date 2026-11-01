@@ -3,7 +3,7 @@
 %
 % Models:
 %   B1 = RBF-SVM
-%   B2 = Hojabri-style KNN
+%   B2 = Fair-tuned KNN (equal 29-configuration tuning budget)
 %   B3 = Uniform-random trivial baseline
 %
 % Evaluation:
@@ -64,8 +64,11 @@ sigmaTolerance = 1e-8;
 svmC  = 300;
 svmKS = 10;
 
-% Frozen KNN
-knnK = 5;
+% Frozen fair-tuned KNN
+% Selected using the same 29-configuration tuning budget as SVM
+knnK = 1;
+knnDistance = 'chebychev';
+knnWeight = 'inverse';
 
 % Frozen trivial-baseline RNG
 rng(750,'twister');
@@ -216,14 +219,14 @@ for w = 1:numWindows
                 macroF1(Yval,svmPred,classNames);
 
             %% ------------------------------------------------
-            % B2: Hojabri-style KNN
+            % B2: Fair-tuned KNN
             %% ------------------------------------------------
 
             knnModel = fitcknn( ...
                 XtrainZ,Ytrain, ...
                 'NumNeighbors',knnK, ...
-                'Distance','cityblock', ...
-                'DistanceWeight','inverse', ...
+                'Distance',knnDistance, ...
+                'DistanceWeight',knnWeight, ...
                 'Standardize',false);
 
             knnPred = predict(knnModel,XvalZ);
@@ -334,18 +337,18 @@ end
 
 matOutput = fullfile( ...
     outputDir, ...
-    'STAGE3_BASELINES_REPRODUCED.mat');
+    'STAGE3_BASELINES_FAIR_29BUDGET_V1.mat');
 
 csvOutput = fullfile( ...
     outputDir, ...
-    'STAGE3_BASELINES_REPRODUCED.csv');
+    'STAGE3_BASELINES_FAIR_29BUDGET_V1.csv');
 
 save(matOutput, ...
     'summaryTable', ...
     'svmAccuracyAll','svmF1All', ...
     'knnAccuracyAll','knnF1All', ...
     'randomAccuracyAll','randomF1All', ...
-    'svmC','svmKS','knnK', ...
+    'svmC','svmKS','knnK','knnDistance','knnWeight', ...
     'sigmaTolerance','windowNames');
 
 writetable(summaryTable,csvOutput);
