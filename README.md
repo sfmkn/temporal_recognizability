@@ -1,4 +1,4 @@
-# Temporal Recognizability of Distribution-Network Fault Classes
+# Temporal Recognizability of Power Distribution-Network Fault Classes
 
 ## Overview
 
